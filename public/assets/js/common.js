@@ -77,6 +77,7 @@ $(document).ready(function(){
     }
 
     $(document).on('submit','.ajax-form',function(e){
+        +
         e.preventDefault();
         let form = $(this);
         // let url = form.attr('action');
