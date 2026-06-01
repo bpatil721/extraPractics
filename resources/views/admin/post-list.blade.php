@@ -27,7 +27,6 @@
                 Previous
             </button>
             
-            {{-- Page Numbers --}}
             @php
                 $currentPage = $data->currentPage();
                 $lastPage = $data->lastPage();
@@ -36,7 +35,6 @@
                 $end = min($lastPage, $currentPage + $range);
             @endphp
             
-            {{-- First page --}}
             @if($start > 1)
                 <button class="btn btn-sm btn-secondary pagination-btn" data-page="1">1</button>
                 @if($start > 2)
