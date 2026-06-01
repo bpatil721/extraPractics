@@ -16,6 +16,9 @@
                 
             </tr>
         @endforeach 
+
     </tbody>
 </table>
-
+        <div class="row">
+            {{ $data->link() }}
+        </div>

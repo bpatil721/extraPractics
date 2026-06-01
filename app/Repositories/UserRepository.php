@@ -6,8 +6,8 @@ class UserRepository {
     public function getAllUser(){
         return User::get();
     }
-    public function updateUser(){
-        
+    public function updateUser($validation,$user){
+        return $user->update($validation);
     }
 }
 ?>

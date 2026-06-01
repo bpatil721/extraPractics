@@ -6,17 +6,31 @@ $(document).ready(function(){
         }
     });
     function ajaxRequest(options) {
-        console.log(options)
-        if(options.method == 'POST'){            
+        // Check if data is FormData or plain object
+        let isFormData = options.data instanceof FormData;
+        
+        // Convert plain object to FormData if needed for POST/PUT/PATCH/DELETE
+        if(!isFormData && options.data && typeof options.data === 'object' && (options.method === 'POST' || options.method === 'PUT' || options.method === 'PATCH' || options.method === 'DELETE')){
+            let formData = new FormData();
+            for(let key in options.data){
+                formData.append(key, options.data[key]);
+            }
+            options.data = formData;
+            isFormData = true;
+        }
+        
+        if(options.method == 'POST' && isFormData){            
             options.data.append('_token', $('meta[name="csrf-token"]').attr('content'));
             options.data.append('_method', 'POST');
         }
-        if(options.method == 'PUT' || options.method == 'PATCH'){
+        if((options.method == 'PUT' || options.method == 'PATCH') && isFormData){
             options.data.append('_method', options.method);
             options.method = 'POST'; // Laravel requires POST for form data with _method
         }
         if(options.method == 'DELETE'){
-            options.data = options.data || new FormData();
+            if(!isFormData){
+                options.data = new FormData();
+            }
             options.data.append('_method', 'DELETE');
             options.method = 'POST';
         }
@@ -94,8 +108,29 @@ $(document).ready(function(){
 
     $('.data-show').each(function(){
         let element = $(this);
+        let page = $(this).data('page');
+        loaddata(element, page);
+      
+    });
+
+   $(document).on('click', '#logout', function () {
+        ajaxRequest({
+            url :$(this).data('url'),
+        })
+    })
+    function loaddata(element, page){
+        let url = element.data('url');
+        
+        // Add page parameter to URL
+        if(page){
+            url += (url.includes('?') ? '&' : '?') + 'page=' + page;
+        }
+        
         ajaxRequest({            
-            url: element.data('url'),
+            url: url,
+            method: 'GET',
+            processData: true,
+            contentType: 'application/x-www-form-urlencoded',
             success: function(response){
                 if(response.status){
                     element.html(response.html);
@@ -105,14 +140,7 @@ $(document).ready(function(){
                 console.error('Error loading data:', xhr);
             }
         })
-      
-    });
-
-   $(document).on('click', '#logout', function () {
-        ajaxRequest({
-            url :$(this).data('url'),
-        })
-    })
+    }
     $(document).on('click','.editRecord',function(){
        
         ajaxRequest({
@@ -137,11 +165,7 @@ $(document).ready(function(){
           let id = form.find('#id').val();
           let baseUrl = form.data('url');
           
-          console.log('Form found:', form.length);
-          console.log('ID:', id);
-          console.log('Base URL:', baseUrl);
-          console.log('Name:', form.find('#name').val());
-          console.log('Email:', form.find('#email').val());
+         
           
           if(!id){
               toastr.error('User ID is missing');
@@ -170,4 +194,10 @@ $(document).ready(function(){
         })
     })
 
+    $(document).on('click','.pagination-btn',function(){
+        let page = $(this).data('page');
+        console.log(page)
+          let element = $('.data-show');
+        loaddata(element,page);
+    })
 });
