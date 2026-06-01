@@ -42,7 +42,7 @@
                 @endif
             @endif
             
-            {{-- Page range --}}
+            {{-- Page rangetestet sfsdfsdfsdfdsfdsfsdfdfd --}}
             @for($i = $start; $i <= $end; $i++)
                 <button class="btn btn-sm pagination-btn {{ $currentPage == $i ? 'btn-primary' : 'btn-secondary' }}" 
                         data-page="{{ $i }}"
